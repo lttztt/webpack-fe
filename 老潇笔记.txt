@@ -1,0 +1,606 @@
+webpack1.x
+----------------------------------
+webpack2.x
+----------------------------------
+webpack3.x
+----------------------------------
+webpack4.x
+---------------------------------
+
+官网: https://webpack.js.org/
+
+---------------------------------
+静态开发(H5+C3)	gulp
+vue\react  ->  webpack
+DEMO  -> webpack 转
+---------------------------------
+webpack是什么?
+	打包工具(模块打包器)
+	前端工程师，必不可少工具
+	webpack4.x
+webpack作用:
+1. 打包  (把多个文件打包成一个js文件， 较少服务器压力、带宽)
+2. 转化  (比如less、sass、ts)   需要loader
+3. 优化  (SPA越来越盛行，前端项目复杂度高， webpack可以对项目进行优化)
+---------------------------------
+webpack构成:
+1. 入口   entry
+2. 出口	output
+3. loaders  转化器
+4. plugins  插件
+5. devServer 开发服务器
+6. mode   
+------------------------------------------------------------------
+先必须确保node环境已经安装
+	nodejs.org  -> download -> 下一步
+------------------------------------------------------------------
+安装webpack:
+	npm install webpack-cli -g
+
+	OR
+
+	yarn add webpack-cli -g
+
+	验证webpack环境已经ok?
+		webpack -v
+------------------------------------------------------------------
+package.json  项目主要依赖配置文件
+
+	npm init -y
+
+------------------------------------------------------------------
+开发环境: (develepment)
+	就是你平时编写代码的环境
+
+	npm i jquery --save-dev
+	npm i jquery -D
+生产环境: (production)
+	项目开发完毕，部署上线
+	
+	npm i jquery --save
+	npm i jquery -S
+--------------------------------------------------------------------
+
+npm i jquery
+npm un jquery
+
+
+npm i jquery --save-dev
+npm i jquery --save
+
+npm i jquery --save-dev jquery
+--------------------------------------------------------------------
+
+npm i jquery loadsh aaa bbb ccc -D
+
+--------------------------------------------------------------------
+cnpm如何配置:
+	npm install -g cnpm --registry=https://registry.npm.taobao.org
+
+--------------------------------------------------------------------
+跑一跑webpack:
+	终端里运行:
+		webpack src\index.js --output dist/bundle.js
+--------------------------------------------------------------------
+webpack.config.js    webpack配置文件
+
+	预览:
+
+		module.exports={
+			//入口配置
+			entry:{},
+			//出口配置
+			output:{},
+			//module.rules
+			//loaders
+			module:{},
+			//插件
+			plugins:[],
+			//开发服务器
+			devServer:{}
+		};
+--------------------------------------------------------------------
+module.exports={
+    //入口配置
+    entry:{
+        a:'./src/index.js'
+    },
+    //出口配置
+    output:{
+        path:__dirname+'/dist', //path必须是绝对路径
+        filename:'bundle.js'
+    }
+};
+--------------------------------------------------------------------
+const path = require('path'); //node系统模块
+module.exports={
+    //入口配置
+    entry:{
+        a:'./src/index.js'
+    },
+    //出口配置
+    output:{
+        path:path.resolve(__dirname,'dist'), //path必须是绝对路径
+        filename:'bundle.js'
+    }
+};
+--------------------------------------------------------------------
+配置文件名字一定得叫 webpack.config.js  答: 不是
+
+如果改名叫:  mmr.config.js
+
+	运行时候:
+
+	webpack --config mmr.config.js
+--------------------------------------------------------------------
+npm run dev
+npm run build
+
+npm scripts:
+
+	package.json:
+
+		"scripts": {
+		    	"build": "webpack --config mmr.config.js",
+			"dev":"xxx",
+			"aaa":"xxx"
+		  }
+--------------------------------------------------------------------
+parcel   零配置
+--------------------------------------------------------------------
+webpack4.x 实现所谓的0配置:
+	
+--------------------------------------------------------------------
+mode:
+
+	webpack --mode development
+		
+	webpack --mode production 
+		明显文件被压缩
+
+--------------------------------------------------------------------
+
+多入口(多文件)打包一起:
+	const path = require('path');
+	module.exports = {
+		entry:['./src/index.js','./src/index2.js'],  //按照顺一起打包 bundle.js
+		output:{
+			path:path.resolve(__dirname, 'dist'),
+			filename:'bundle.js'
+		}
+	};
+--------------------------------------------------------------------
+多入口多出口配置:
+	const path = require('path');
+	module.exports = {
+		entry:{
+			index:'./src/index.js',
+			index2:'./src/index2.js'
+		},
+		output:{
+			path:path.resolve(__dirname, 'dist'),
+			filename:'[name].bundle.js'
+		}
+	};
+--------------------------------------------------------------------
+npm i webpack-cli -g
+--------------------------------------------------------------------
+
+html-webpack-plugin:
+	* 注意: 依赖webpack、webpack-cli
+	生成页面
+
+	1. 安装
+		npm i html-webpack-plugin -D
+	2. 引入
+		const HtmlWebpackPlugin = require('html-webpack-plugin');
+	3. 使用
+		plugins:[
+			new HtmlWebpackPlugin()
+		]
+	----------------------------------------------------
+	html-webpack-plugin:
+		模板:
+			new HtmlWebpackPlugin({
+				template:'模板地址'
+			})
+		页面标题:
+			new HtmlWebpackPlugin({
+				title:'xxxxx',
+				template:'模板地址'
+			})
+
+			一定记得在模板中使用:
+		生成连接消除缓存:
+			new HtmlWebpackPlugin({
+				hash:true,
+				title:'xxxxx',
+				template:'模板地址'
+			})
+		压缩输出:
+			new HtmlWebpackPlugin({
+				minify:{
+					collapseWhitespace:true,  //压缩空白
+					removeAttributeQuotes:true //删除属性双引号
+				},
+				hash:true,
+				title:'I Love China',
+				template:'./src/index.html'
+			})
+		生成多个页面:
+			filename:'xxx'
+		多页面分别引入自己的js:
+			chunks:['index']
+
+	https://www.npmjs.com/package/html-webpack-plugin#
+--------------------------------------------------------------------
+clean-webpack-plugin:	删除某些东西(清除)
+	1. 下载
+		cnpm i clean-webpack-plugin -D
+	2. 引入
+		const CleanWebpackPlugin = require('clean-webpack-plugin');
+	3. 使用:
+		new CleanWebpackPlugin(['dist'])
+--------------------------------------------------------------------
+devServer:
+	1. 下载
+		cnpm i webpack-dev-server -D
+	2. 使用
+		devServer:{
+		        //设置服务器访问的基本目录
+		        contentBase:path.resolve(__dirname, 'dist'),
+		        //服务器ip地址， localhost
+		        host:'localhost',
+		        //设置端口
+		        port:8090
+		    }
+
+	此时  pakcage.json:
+		"scripts": {
+			"build": "webpack --mode development",
+			"dev":"webpack-dev-server --mode development"
+		}
+
+	想自动打开浏览器:
+		open:true
+
+	热更新:
+		hot:true
+
+		开启:
+			new webpack.HotModuleReplacementPlugin()
+
+	https://webpack.js.org/configuration/dev-server/
+
+--------------------------------------------------------------------
+loaders:  在webpack里面是一个很重要功能
+	加载器、转化器
+	比如: less/scss 转成css
+	        ES7 8
+	        jsx
+--------------------------------------------------------------------
+处理css文件:
+	style-loader
+	css-loader
+
+		cnpm i style-loader css-loader -D
+
+	配置:
+		module:{
+			rules:[
+				{
+					test:/\.css$/,
+					use:['style-loader','css-loader']
+				}
+			]
+		}
+
+	关于loader写法:
+		1. use:['xxx-loader','xxx-loader']
+		2. loader:['xxx-loader','xxx-loader']
+		3. use:[
+	                    {loader:'style-loader'},
+	                    {loader:'css-loader'}
+	                ]
+--------------------------------------------------------------------
+打包完以后肯定需要压缩上线:
+	如何压缩:
+	1. webpack4.x
+		--mode production
+	2. 之前版本
+		uglifyjs-webpack-plugin
+
+		a). cnpm i uglifyjs-webpack-plugin -D
+		b). const uglify = require('xxx);
+		c). new ugliufy()
+--------------------------------------------------------------------		
+图片: (png,jpg,gif)
+	url-loader
+	file-loader
+
+	1. cnpm i file-loader url-loader -D
+	2. 配置
+		{
+	                test:/\.(png|jpg|gif)$/,
+	                use:[{
+	                    loader:'url-loader',
+	                    options:{
+	                          limit:50，  //这里单位是b  20480 = 20k 的 图片大小
+			 outputPath:'images'
+	                    }
+	                }]
+	            }
+--------------------------------------------------------------------
+分离:  css
+	extract-text-webpack-plugin
+
+	1. cnpm i extract-text-webpack-plugin -D		webpack3.x
+	
+		cnpm i extract-text-webpack-plugin@next -D	webpack4.x
+	2. 在plugins里面应用
+		new ExtractTextPlugin(提取出去的路径)
+
+		use:ExtractTextPlugin.extract({
+		    fallback:'style-loader',
+		    use:'css-loader',
+		    publicPath:'../' //解决css背景图，路径问题
+		})
+	3. 遇见一些小事
+--------------------------------------------------------------------		
+mini-css-extract-plugin:   截止到目前为止(2018-3-23)，对背景图路径配置
+	API文档
+
+	new MiniCssExtractPlugin({
+	    filename:'css/index.css'
+	})
+--------------------------------------------------------------------
+less:
+	1. cnpm i less less-loader -D
+	2. {
+		test:/\.less$/,
+		use:['style-loader','css-loader','less-loader']
+	}
+
+
+分离less:
+	{
+                test:/\.less$/,
+                //use:['style-loader','css-loader','less-loader']
+                use:ExtractTextPlugin.extract({
+                    fallback:'style-loader',
+                    use:['css-loader','less-loader']
+                })
+            }
+--------------------------------------------------------------------
+sass:
+	cnpm i node-sass sass-loader -D
+
+	配置:
+	{
+                test:/\.(sass|scss)$/,
+                use:['style-loader','css-loader','sass-loader']
+            }
+
+提取sass:
+	{
+                test:/\.(sass|scss)$/,
+                use:ExtractTextPlugin.extract({
+                    fallback:'style-loader',
+                    use:['css-loader','sass-loader']
+                })
+            }
+--------------------------------------------------------------------		
+transform:
+
+-webkit-transform:
+
+自动处理前缀:
+
+	postCss	预处理器
+
+	专门处理css平台
+
+1. cnpm i postcss-loader
+	autoprefixer -D
+
+2. 准备 postcss.config.js   配置postCss
+	module.exports ={
+		plugins:[
+			require('autoprefixer')
+		]
+	};
+3. 配置loader
+	use:[
+                    {loader:'style-loader'},
+                    {loader:'css-loader'},
+                    {loader:'postcss-loader'}
+                ]
+4. 提取出来
+	use:ExtractTextPlugin.extract({
+                    fallback:'style-loader',
+                    use:['css-loader','postcss-loader'],
+                    publicPath:'../' //解决css背景图，路径问题
+                })
+--------------------------------------------------------------------
+消除冗余css代码:
+	Purifycss
+
+	1. 下载
+
+		cnpm i purifycss-webpack purify-css -D
+	2. 引入插件
+		const PurifyCssWebpack = rewquire('purifycss-webpack');
+	3. 需要引入一个额外包
+		glob
+		cnpm i glob -D
+	4. 在plugins里面配置
+		new PurifyCssWebpack({
+		            paths:glob.sync(path.join(__dirname, 'src/*.html'))
+		        })
+---------------------------------------------
+调试:
+	webpack4.x 开启调试:
+		--mode development
+
+	webpack3.x之前:
+		sourceMap
+
+		devtool:'source-map',
+
+---------------------------------------------
+babel:
+	- babel用来编译js
+	- 让你很轻松的使用 ESnext,转化
+	- jsx
+
+babel-core	bable-loader    babel-preset-env
+
+	1. 下载
+		cnpm i babel-loader babel-core babel-preset-env -D
+	2. 配置
+		{
+	                test:/\.(js|jsx)$/,
+	                use:['babel-loader'],
+	                exclude:/node_modules/
+	            }
+
+	ESnext所有语法
+---------------------------------------------
+jsx:
+	cnpm i babel-preset-react -D
+	cnpm i react react-dom -D
+---------------------------------------------
+在webpack中用模块化:
+	和node一模一样
+
+	导出:
+		module.exports = xxx
+	引入:
+		require('./xxxxx');
+---------------------------------------------
+在webpack中使用json:
+	json-loader
+
+	到webpack.3x版本之后不用，json可以默认就识别
+
+	const json = require('./xxx.json')
+---------------------------------------------
+静态资源输出:
+	copy-webpack-plugin
+
+	1. 下载
+		cnpm i copy-webpack-plugin -D
+	2. 引入
+		const CopyWebpackPlugin = require('copy-webpack-plugin');
+	3. 使用
+		plugins:[
+			new CopyWebpackPlugin([{
+				from:path.resolve(__dirname, 'src/assets'),
+				to:'./public'
+			}])
+		]
+---------------------------------------------	
+https://webpack.js.org/plugins/copy-webpack-plugin/
+
+都在npm上:
+	
+
+	github  issues
+---------------------------------------------
+使用第三库:
+	1. 直接npm下载，然后引入（完全可以使用，但是我个人不是很推荐）
+		cnpm i jquery -S
+		
+		import $ from 'jquery'
+
+		$(xxxx).on()
+		$(xxx).css()
+	2. ProvidePlugin	(个人推荐此方式)
+		const webpack = require('webpack');
+
+		在plugins里面使用:
+		
+			new webpack.ProvidePlugin({
+				$:'jquery',
+				lodash:'lodash'
+				....
+			})
+
+	通过ProvidePlugin和 import直接引入区别:
+		1. import $...，引入之后，无论你在代码中是否使用jquery，打包后，都会打进去，这样其实产生大量的冗余js
+		2. Provideplugin, 只有你在使用到此库，才会打包
+--------------------------------------------------------
+提取第三方(自己感觉想提取)js库:
+	之前webpack3.x版本之前:
+		
+		new webpack.optimize.CommonsChunkPlugin({
+		    name:'jquery'
+		})
+
+	到了webpack4.x版本:
+		optimization.splitChunks
+
+		optimization:{
+			splitChunks:{
+				cacheGroups:{
+					vendor:{
+					    chunks:'initial',
+					    name:'jquery',
+					    enforce:true
+					}
+				}
+			}
+		}
+		----------------------------------------------
+		optimization:{
+			splitChunks:{
+				cacheGroups:{
+					aaa:{
+					    chunks:'initial',
+					    name:'jquery',
+					    enforce:true
+					},
+					bbb:{
+					    chunks:'initial',
+					    name:'入口名称',
+					    enforce:true
+					}
+				}
+			}
+		}
+--------------------------------------------------------
+http://mmr.ke.qq.com
+
+官方QQ群: 651661013
+
+
+
+
+
+	
+
+
+
+
+	
+
+	
+
+	
+
+	
+
+			
+		
+
+
+
+
+
+
+
+
+
+
+
+
